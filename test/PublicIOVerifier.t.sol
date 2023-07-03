@@ -2,12 +2,12 @@
 pragma solidity <0.9;
 
 import "forge-std/Test.sol";
-import {VerifierWrapper} from "../contracts/VerifierWrapper.sol";
+import {PublicIOVerifierWrapper} from "../contracts/PublicIOVerifierWrapper.sol";
 import {YulDeployer} from "../contracts/YulDeployer.sol";
 
-contract YulDeployerTest is Test {
+contract PublicIOVerifierTest is Test {
     address verifierAddress;
-    VerifierWrapper verifierWrapper;
+    PublicIOVerifierWrapper verifierWrapper;
     YulDeployer yulDeployer;
 
     function setUp() public {
@@ -15,7 +15,7 @@ contract YulDeployerTest is Test {
         verifierAddress = address(
             yulDeployer.deployContract("../snark-verifiers/9_public_io")
         );
-        verifierWrapper = new VerifierWrapper(verifierAddress);
+        verifierWrapper = new PublicIOVerifierWrapper(verifierAddress);
     }
 
     function test_verifier() external {
@@ -23,9 +23,8 @@ contract YulDeployerTest is Test {
         string memory proofStr = vm.readFile(
             "snark-verifiers/data/9_public_io.calldata"
         );
-        bytes memory proof = vm.parseBytes(proofStr);
 
         // Verify proof and assert success
-        uint256 num = verifierWrapper.validProof(7, proof);
+        verifierWrapper.validProof(7, vm.parseBytes(proofStr));
     }
 }
